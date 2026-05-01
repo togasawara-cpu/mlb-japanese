@@ -12,6 +12,7 @@ from __future__ import annotations
 import html as html_mod
 import json
 import sys
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,14 @@ JST = timezone(timedelta(hours=9))
 SEASON = 2026
 TIMEOUT = 20
 
+# SpoTVnow JAPAN 公式 YouTube チャンネル（日本語実況のMLBハイライト）
+SPOTV_CHANNEL_ID = "UCJ-l-sMQFHogSy8KXRyMIRA"
+SPOTV_RSS_URL = f"https://www.youtube.com/feeds/videos.xml?channel_id={SPOTV_CHANNEL_ID}"
+ATOM_NS = {
+    "atom": "http://www.w3.org/2005/Atom",
+    "yt": "http://www.youtube.com/xml/schemas/2015",
+}
+
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_HTML = ROOT / "docs" / "index.html"
 OUTPUT_STATS_JSON = ROOT / "stats_data.json"
@@ -35,35 +44,35 @@ OUTPUT_HIGHLIGHTS_JSON = ROOT / "highlights.json"
 # 対象選手 (8名)
 PLAYERS: list[dict[str, Any]] = [
     {"key": "ohtani",   "id": 660271, "name_ja": "大谷 翔平",  "name_en": "Shohei Ohtani",
-     "jersey": "17", "team_code": "LAD", "team_full": "LOS ANGELES DODGERS",
+     "jersey": "17", "team_code": "LAD", "team_full": "LOS ANGELES DODGERS", "team_jp": "ドジャース",
      "team_class": "dodgers",  "position": "DH/SP",
      "is_pitcher": True,  "is_hitter": True,  "two_way": True},
     {"key": "yamamoto", "id": 680781, "name_ja": "山本 由伸",  "name_en": "Yoshinobu Yamamoto",
-     "jersey": "18", "team_code": "LAD", "team_full": "LOS ANGELES DODGERS",
+     "jersey": "18", "team_code": "LAD", "team_full": "LOS ANGELES DODGERS", "team_jp": "ドジャース",
      "team_class": "dodgers",  "position": "SP",
      "is_pitcher": True,  "is_hitter": False},
     {"key": "imanaga",  "id": 684007, "name_ja": "今永 昇太",  "name_en": "Shota Imanaga",
-     "jersey": "18", "team_code": "CHC", "team_full": "CHICAGO CUBS",
+     "jersey": "18", "team_code": "CHC", "team_full": "CHICAGO CUBS", "team_jp": "カブス",
      "team_class": "cubs",     "position": "SP",
      "is_pitcher": True,  "is_hitter": False},
     {"key": "suzuki",   "id": 673548, "name_ja": "鈴木 誠也",  "name_en": "Seiya Suzuki",
-     "jersey": "27", "team_code": "CHC", "team_full": "CHICAGO CUBS",
+     "jersey": "27", "team_code": "CHC", "team_full": "CHICAGO CUBS", "team_jp": "カブス",
      "team_class": "cubs",     "position": "OF",
      "is_pitcher": False, "is_hitter": True},
     {"key": "yoshida",  "id": 807799, "name_ja": "吉田 正尚",  "name_en": "Masataka Yoshida",
-     "jersey": "7",  "team_code": "BOS", "team_full": "BOSTON RED SOX",
+     "jersey": "7",  "team_code": "BOS", "team_full": "BOSTON RED SOX", "team_jp": "レッドソックス",
      "team_class": "redsox",   "position": "DH/OF",
      "is_pitcher": False, "is_hitter": True},
     {"key": "okamoto",  "id": 672960, "name_ja": "岡本 和真",  "name_en": "Kazuma Okamoto",
-     "jersey": "7",  "team_code": "TOR", "team_full": "TORONTO BLUE JAYS",
+     "jersey": "7",  "team_code": "TOR", "team_full": "TORONTO BLUE JAYS", "team_jp": "ブルージェイズ",
      "team_class": "bluejays", "position": "3B",
      "is_pitcher": False, "is_hitter": True},
     {"key": "murakami", "id": 808959, "name_ja": "村上 宗隆",  "name_en": "Munetaka Murakami",
-     "jersey": "5",  "team_code": "CWS", "team_full": "CHICAGO WHITE SOX",
+     "jersey": "5",  "team_code": "CWS", "team_full": "CHICAGO WHITE SOX", "team_jp": "ホワイトソックス",
      "team_class": "whitesox", "position": "3B",
      "is_pitcher": False, "is_hitter": True},
     {"key": "matsui",   "id": 673513, "name_ja": "松井 裕樹",  "name_en": "Yuki Matsui",
-     "jersey": "1",  "team_code": "SD",  "team_full": "SAN DIEGO PADRES",
+     "jersey": "1",  "team_code": "SD",  "team_full": "SAN DIEGO PADRES", "team_jp": "パドレス",
      "team_class": "padres",   "position": "RP",
      "is_pitcher": True,  "is_hitter": False},
 ]
@@ -149,6 +158,82 @@ def pick_thumb(cuts: Any) -> str:
     return cuts_list[0].get("src", "") if cuts_list else ""
 
 
+# SpoTVnow YouTube ハイライト
+def fetch_youtube_videos() -> list[dict[str, str]]:
+    """SpoTVnowの最新公開動画(最大15件)をRSSから取得"""
+    try:
+        r = requests.get(SPOTV_RSS_URL, timeout=TIMEOUT)
+        r.raise_for_status()
+        root = ET.fromstring(r.content)
+        videos: list[dict[str, str]] = []
+        for entry in root.findall("atom:entry", ATOM_NS):
+            vid_el = entry.find("yt:videoId", ATOM_NS)
+            title_el = entry.find("atom:title", ATOM_NS)
+            pub_el = entry.find("atom:published", ATOM_NS)
+            if vid_el is None or title_el is None:
+                continue
+            videos.append({
+                "videoId": vid_el.text or "",
+                "title": title_el.text or "",
+                "published": (pub_el.text or "")[:10] if pub_el is not None else "",
+            })
+        return videos
+    except (requests.RequestException, ET.ParseError) as e:
+        print(f"[WARN] SpoTVnow RSS failed: {e}", file=sys.stderr)
+        return []
+
+
+def find_youtube_video(videos: list[dict[str, str]],
+                       player: dict[str, Any],
+                       game_date_str: str,
+                       kind: str) -> dict[str, Any] | None:
+    """RSS動画リストから選手の試合に該当する動画を1つ選ぶ。
+
+    マッチング条件:
+    1. タイトルに 'M.D' 形式の試合日が含まれる
+    2. タイトルに自チームの日本語名が含まれる
+    3. shorts は除外
+    優先順位: 投球ダイジェスト(投手) > 試合ハイライト > 選手名一致
+    """
+    try:
+        d = datetime.strptime(game_date_str, "%Y-%m-%d")
+        date_pat = f"{d.month}.{d.day}"
+    except (ValueError, TypeError):
+        return None
+
+    surname = player["name_ja"].split()[0]  # 「大谷 翔平」→「大谷」
+    own_jp = player.get("team_jp", "")
+
+    candidates: list[tuple[int, dict[str, str]]] = []
+    for v in videos:
+        title = v.get("title", "")
+        if "#shorts" in title.lower():
+            continue
+        if date_pat not in title:
+            continue
+        if own_jp and own_jp not in title:
+            continue
+        score = 0
+        if kind == "pitching" and "投球ダイジェスト" in title:
+            score += 100
+        elif "試合ハイライト" in title:
+            score += 80
+        if surname in title:
+            score += 50
+        candidates.append((score, v))
+
+    if not candidates:
+        return None
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    best = candidates[0][1]
+    return {
+        "source": "youtube",
+        "videoId": best["videoId"],
+        "title": best["title"],
+        "published": best.get("published", ""),
+    }
+
+
 def fetch_highlight(game_pk: int) -> dict[str, Any] | None:
     if not game_pk:
         return None
@@ -187,6 +272,10 @@ def collect_data() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
     stats_out: list[dict[str, Any]] = []
     highlights_out: dict[str, dict[str, Any]] = {}
 
+    # SpoTVnow YouTube 動画一覧（最新15件）を一度だけ取得
+    yt_videos = fetch_youtube_videos()
+    print(f"[INFO] SpoTVnow RSS: {len(yt_videos)} videos", file=sys.stderr)
+
     for p in PLAYERS:
         print(f"[INFO] {p['name_ja']} ...", file=sys.stderr)
         season: dict[str, Any] = {}
@@ -207,19 +296,32 @@ def collect_data() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
             if lg:
                 last_game["pitching"] = lg
 
-        # 直近試合のうち最新のgamePkでハイライトを取得
+        # 直近試合のうち最新のgamePk・日付・kindを特定
         latest_pk: int | None = None
         latest_date = ""
+        latest_kind = ""
         for kind in ("hitting", "pitching"):
             lg = last_game.get(kind)
             if lg and lg.get("date", "") > latest_date:
                 latest_date = lg["date"]
                 latest_pk = lg.get("gamePk")
-        if latest_pk:
-            hl = fetch_highlight(latest_pk)
-            if hl and hl.get("mp4"):
-                hl["game_date"] = latest_date  # ハイライト公開日ではなく試合日を表示するため
-                highlights_out[p["key"]] = hl
+                latest_kind = kind
+
+        if latest_date:
+            # 1. SpoTVnow YouTube を優先
+            yt = find_youtube_video(yt_videos, p, latest_date, latest_kind)
+            if yt:
+                yt["game_date"] = latest_date
+                highlights_out[p["key"]] = yt
+                print(f"[OK]   {p['name_ja']}: YouTube → {yt['title'][:40]}...", file=sys.stderr)
+            elif latest_pk:
+                # 2. フォールバック: MLB公式の試合ハイライト
+                hl = fetch_highlight(latest_pk)
+                if hl and hl.get("mp4"):
+                    hl["source"] = "mlb"
+                    hl["game_date"] = latest_date
+                    highlights_out[p["key"]] = hl
+                    print(f"[OK]   {p['name_ja']}: MLB fallback", file=sys.stderr)
 
         stats_out.append({
             "key": p["key"],
@@ -360,11 +462,26 @@ def render_last_game(p: dict[str, Any], last_game: dict[str, Any]) -> str:
 
 
 def render_video_block(highlight: dict[str, Any] | None) -> str:
-    if not highlight or not highlight.get("mp4"):
+    if not highlight:
         return ""
     title = html_mod.escape(highlight.get("title", ""))
     # 試合日を優先表示（無ければハイライト公開日にフォールバック）
     short = fmt_short_date(highlight.get("game_date") or highlight.get("date", ""))
+
+    # SpoTVnow YouTube
+    if highlight.get("source") == "youtube" and highlight.get("videoId"):
+        vid = html_mod.escape(highlight["videoId"])
+        return f"""          <div class="video">
+            <iframe src="https://www.youtube.com/embed/{vid}"
+                    title="{title}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <div class="video-caption">▶ {title} ({short}・SpoTVnow)</div>
+          </div>"""
+
+    # MLB公式動画（フォールバック）
+    if not highlight.get("mp4"):
+        return ""
     thumb = html_mod.escape(highlight.get("thumb", ""))
     mp4 = html_mod.escape(highlight["mp4"])
     return f"""          <div class="video">
@@ -668,8 +785,9 @@ CSS = """  :root {
     background: #000;
     border: 1px solid var(--border);
   }
-  .video video {
-    display: block; width: 100%; aspect-ratio: 16/9; background: #000;
+  .video video,
+  .video iframe {
+    display: block; width: 100%; aspect-ratio: 16/9; background: #000; border: 0;
   }
   .video-caption {
     font-size: 0.74rem; color: var(--text-dim);
@@ -735,6 +853,8 @@ def render_html(stats: list[dict[str, Any]],
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
 <title>MLB日本人選手 前日成績</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

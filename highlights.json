@@ -6,6 +6,7 @@
         "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/29/c7e10d39-561c1726-c0a119ed-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
         "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/dsulgwytsi2mueujrwsx.jpg",
         "gamePk": 823958,
+        "source": "mlb",
         "game_date": "2026-04-29"
     },
     "imanaga": {
@@ -15,6 +16,7 @@
         "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/26/852172c4-cee2ba1a-6b288f80-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
         "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/lieh5yti8xlck8gan0bz.jpg",
         "gamePk": 823959,
+        "source": "mlb",
         "game_date": "2026-04-26"
     },
     "suzuki": {
@@ -24,6 +26,7 @@
         "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/28/a9f9f131-e9607df3-109d23dc-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
         "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/vwfrlhsoym8zwhwqixnr.jpg",
         "gamePk": 823310,
+        "source": "mlb",
         "game_date": "2026-04-28"
     },
     "yoshida": {
@@ -33,6 +36,7 @@
         "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/28/7c0c72f5-145a60a2-1e7e6451-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
         "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/zwjesxxkyb0yvyqzj7r1.jpg",
         "gamePk": 822823,
+        "source": "mlb",
         "game_date": "2026-04-28"
     },
     "okamoto": {
@@ -42,6 +46,7 @@
         "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/30/93b53fbe-b18ffcf3-cea8212f-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
         "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/qsdrgb0bn540o0jud62y.jpg",
         "gamePk": 823714,
+        "source": "mlb",
         "game_date": "2026-04-30"
     },
     "murakami": {
@@ -51,6 +56,7 @@
         "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/29/4db2ddad-77ccfcce-63227384-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
         "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/ptcohhxf4gt0len0fnv2.jpg",
         "gamePk": 824608,
+        "source": "mlb",
         "game_date": "2026-04-29"
     }
 }
