@@ -6,16 +6,28 @@
 <title>MLB日本人選手 前日成績</title>
 <style>
   :root {
-    --bg: #0d1117;
-    --bg-card: #161b22;
-    --bg-card-hover: #1c2330;
-    --border: #30363d;
-    --text: #e6edf3;
-    --text-dim: #8b949e;
-    --accent: #58a6ff;
-    --win: #3fb950;
-    --loss: #f85149;
-    --save: #d29922;
+    --bg: #f6f7fb;
+    --bg-soft: #eef1f7;
+    --card: #ffffff;
+    --border: rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.16);
+    --text: #0f172a;
+    --text-dim: #5b6478;
+    --text-faint: #8b94a8;
+    --accent: #2563eb;
+    --accent-2: #7c3aed;
+    --accent-3: #ec4899;
+    --gold: #d97706;
+    --green: #059669;
+    --red: #dc2626;
+
+    --dodgers-1: #1e64c8;  --dodgers-2: #0a3b8a;
+    --cubs-1: #cc3433;     --cubs-2: #0e3386;
+    --redsox-1: #bd3039;   --redsox-2: #0c2340;
+    --padres-1: #ffc425;   --padres-2: #2f241d;
+    --whitesox-1: #27251F; --whitesox-2: #4a4a4a;
+    --bluejays-1: #134A8E; --bluejays-2: #1D2D5C;
+    --neutral-1: #475569;  --neutral-2: #1e293b;
   }
   * { box-sizing: border-box; }
   body {
@@ -26,110 +38,550 @@
                  "Yu Gothic UI", "Meiryo", sans-serif;
     line-height: 1.6;
   }
+
+  /* ===== ヘッダー ===== */
   header.site {
     padding: 24px 16px 16px;
     text-align: center;
     border-bottom: 1px solid var(--border);
   }
-  header.site h1 {
-    margin: 0 0 4px;
-    font-size: 1.4rem;
-    letter-spacing: 0.02em;
+  header.site::after {
+    content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+    width: 70%; max-width: 720px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
   }
-  header.site .date {
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.2);
     color: var(--accent);
-    font-weight: 600;
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 18px; font-weight: 600;
   }
-  header.site .updated {
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    margin-top: 4px;
+  .eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px rgba(5, 150, 105, 0.6);
+    animation: pulse 1.8s ease-in-out infinite;
   }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: 0.4; transform: scale(0.8); }
+  }
+  header.site h1 {
+    margin: 0;
+    font-family: "Bebas Neue", "Noto Sans JP", sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    letter-spacing: 0.04em; line-height: 1.05;
+    background: linear-gradient(135deg, #0f172a 0%, #2563eb 60%, #7c3aed 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.site h1 .ball { display: inline-block; transform: translateY(-4px); margin-right: 6px; -webkit-text-fill-color: initial; }
+  header.site .subtitle { margin-top: 8px; color: var(--text-dim); font-size: 0.95rem; letter-spacing: 0.05em; }
+  .date-block {
+    margin-top: 22px;
+    display: inline-flex; align-items: baseline; gap: 14px;
+    padding: 14px 22px; border-radius: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    box-shadow: 0 6px 20px -10px rgba(15, 23, 42, 0.15);
+  }
+  .date-block .date {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.6rem; letter-spacing: 0.06em;
+    background: linear-gradient(135deg, var(--accent), var(--accent-3));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .date-block .updated { color: var(--text-faint); font-size: 0.78rem; }
+
+  /* ===== メイン ===== */
   main {
-    max-width: 720px;
+    max-width: 1080px;
     margin: 0 auto;
-    padding: 16px;
-    display: grid;
-    gap: 14px;
+    padding: 28px 20px 40px;
+    display: grid; gap: 22px;
   }
-  .card {
-    background: var(--bg-card);
+
+  /* セクション見出し */
+  .section-title {
+    display: flex; align-items: center; gap: 12px;
+    margin: 8px 4px 0;
+    color: var(--text-faint);
+    font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600;
+  }
+  .section-title::before, .section-title::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+  }
+
+  /* ===== 選手カード ===== */
+  .player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+  .player {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    transition: background 0.2s;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    animation: fadeUp 0.6s ease both;
+    box-shadow: 0 6px 20px -14px rgba(15, 23, 42, 0.2);
   }
-  .card:hover { background: var(--bg-card-hover); }
-  .card-head h2 {
-    margin: 0 0 4px;
-    font-size: 1.15rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .player:hover {
+    transform: translateY(-4px); border-color: var(--border-strong);
+    box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.3);
   }
-  .meta { color: var(--text-dim); font-size: 0.85rem; }
-  .opp { color: var(--accent); font-size: 0.95rem; margin-top: 2px; }
-  .card-body {
-    margin-top: 12px;
-    border-top: 1px solid var(--border);
-    padding-top: 12px;
+
+  /* ヘッドショット */
+  .avatar {
+    position: relative; width: 100%;
+    aspect-ratio: 16 / 11;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 50%),
+      linear-gradient(135deg, var(--team-1, #475569), var(--team-2, #1e293b));
+    display: grid; place-items: center; overflow: hidden;
   }
-  .stat-row {
-    display: grid;
-    grid-template-columns: auto 1fr auto 1fr;
-    gap: 6px 10px;
-    align-items: baseline;
-    padding: 4px 0;
+  .avatar::before {
+    content: attr(data-num);
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(5rem, 14vw, 7rem); line-height: 1;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    z-index: 1;
   }
-  .stat-label { color: var(--text-dim); font-size: 0.85rem; }
-  .stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
-  .season {
-    margin-top: 8px;
-    padding-top: 8px;
+  .avatar::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(135deg, transparent 0 24px, rgba(255,255,255,0.04) 24px 25px);
+    pointer-events: none;
+  }
+  .avatar img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center 25%;
+    z-index: 2;
+  }
+  .team-bar {
+    position: absolute; top: 12px; left: 12px; z-index: 3;
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(15, 23, 42, 0.6); color: #fff;
+    font-size: 0.65rem; letter-spacing: 0.14em; font-weight: 600;
+    backdrop-filter: blur(6px);
+  }
+  .team-bar .swatch {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--team-1);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.5);
+  }
+
+  /* 本文 */
+  .body {
+    padding: 16px 18px 18px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .name-row {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+  }
+  .name { font-weight: 800; font-size: 1.15rem; letter-spacing: 0.01em; }
+  .name .num {
+    font-family: "Bebas Neue", sans-serif; font-size: 0.95rem;
+    color: var(--text-faint); margin-left: 6px; letter-spacing: 0.06em;
+  }
+  .team-name { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.12em; font-weight: 600; }
+
+  /* 統計 */
+  .block-label {
+    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-faint); font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+  }
+  .stat-grid + .stat-grid { margin-top: 6px; }
+  .stat-grid .cell { text-align: center; }
+  .stat-grid .num {
+    display: block;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.35rem; line-height: 1;
+    color: var(--text); letter-spacing: 0.02em;
+  }
+  .stat-grid .lbl {
+    display: block;
+    font-size: 0.62rem; letter-spacing: 0.12em;
+    color: var(--text-faint); margin-top: 4px; font-weight: 600;
+  }
+  .stat-grid.pit .num { color: var(--accent-2); }
+
+  /* 直近の試合 */
+  .last-game {
     border-top: 1px dashed var(--border);
+    padding-top: 10px;
+  }
+  .last-game .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .last-game .date {
+    font-family: "Bebas Neue", sans-serif; font-size: 1rem;
+    color: var(--text); letter-spacing: 0.04em;
+  }
+  .last-game .vs { font-size: 0.78rem; color: var(--text-dim); }
+  .last-game .line {
+    font-size: 0.85rem; color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .last-game .line strong { color: var(--text); font-weight: 700; }
+  .last-game .line + .line { margin-top: 2px; }
+
+  /* 動画 */
+  .video {
+    margin-top: 4px;
+    border-radius: 12px; overflow: hidden;
+    background: #000;
+    border: 1px solid var(--border);
+  }
+  .video video {
+    display: block; width: 100%; aspect-ratio: 16/9; background: #000;
+  }
+  .video-caption {
+    font-size: 0.74rem; color: var(--text-dim);
+    padding: 8px 10px; background: var(--bg-soft);
+    border-top: 1px solid var(--border);
+    line-height: 1.4;
+  }
+
+  .empty-msg {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
     color: var(--text-dim);
     font-size: 0.85rem;
-  }
-  .season strong { color: var(--text); }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-  .badge.win { background: var(--win); color: #061a0a; }
-  .badge.loss { background: var(--loss); color: #1a0606; }
-  .badge.save { background: var(--save); color: #1a1306; }
-  .empty {
     text-align: center;
-    color: var(--text-dim);
-    padding: 32px 16px;
+  }
+
+  /* チーム別カラー */
+  .player[data-team="dodgers"]  { --team-1: var(--dodgers-1);  --team-2: var(--dodgers-2); }
+  .player[data-team="cubs"]     { --team-1: var(--cubs-1);     --team-2: var(--cubs-2); }
+  .player[data-team="redsox"]   { --team-1: var(--redsox-1);   --team-2: var(--redsox-2); }
+  .player[data-team="padres"]   { --team-1: var(--padres-1);   --team-2: var(--padres-2); }
+  .player[data-team="whitesox"] { --team-1: var(--whitesox-1); --team-2: var(--whitesox-2); }
+  .player[data-team="bluejays"] { --team-1: var(--bluejays-1); --team-2: var(--bluejays-2); }
+
+  /* アニメ遅延 */
+  .player:nth-child(1) { animation-delay: 0.05s; }
+  .player:nth-child(2) { animation-delay: 0.10s; }
+  .player:nth-child(3) { animation-delay: 0.15s; }
+  .player:nth-child(4) { animation-delay: 0.20s; }
+  .player:nth-child(5) { animation-delay: 0.25s; }
+  .player:nth-child(6) { animation-delay: 0.30s; }
+  .player:nth-child(7) { animation-delay: 0.35s; }
+  .player:nth-child(8) { animation-delay: 0.40s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   footer {
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    padding: 24px 16px 32px;
+    text-align: center; color: var(--text-faint);
+    font-size: 0.75rem; padding: 30px 16px 50px; letter-spacing: 0.05em;
   }
-  footer a { color: var(--accent); text-decoration: none; }
-  @media (max-width: 480px) {
-    .stat-row { grid-template-columns: auto 1fr auto 1fr; gap: 4px 8px; }
-    .card { padding: 14px; }
-  }
+  footer a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed rgba(37,99,235,0.4); }
+  footer a:hover { color: var(--accent-2); border-color: var(--accent-2); }
 </style>
 </head>
 <body>
   <header class="site">
-    <h1>⚾ MLB日本人選手 前日の成績</h1>
-    <div class="date">2026年04月30日</div>
-    <div class="updated">2026年05月01日 23:30 更新</div>
+    <span class="eyebrow"><span class="dot"></span>DAILY REPORT</span>
+    <h1><span class="ball">⚾</span>JAPANESE IN MLB</h1>
+    <div class="subtitle">2026シーズンの日本人選手 成績ダッシュボード</div>
+    <div class="date-block">
+      <div class="date">APR 30, 2026</div>
+      <div class="updated">取得 / May 1, 2026</div>
+    </div>
   </header>
   <main>
-    <p class="empty">本日対象の試合・出場選手はいません。</p>
+    <div class="section-title">Roster &amp; Latest Stats</div>
+
+    <div class="player-grid">
+
+      <article class="player" data-team="dodgers">
+        <div class="avatar" data-num="17">
+          <span class="team-bar"><span class="swatch"></span>LAD</span>
+          <img src="images/ohtani.jpg" alt="大谷 翔平" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">大谷 翔平<span class="num">#17</span></div>
+              <div class="team-name">LOS ANGELES DODGERS · DH/SP</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="block-label">2026 SEASON · BATTING</div>
+            <div class="stat-grid">
+              <div class="cell"><span class="num">.273</span><span class="lbl">AVG</span></div>
+              <div class="cell"><span class="num">6</span><span class="lbl">HR</span></div>
+              <div class="cell"><span class="num">13</span><span class="lbl">RBI</span></div>
+              <div class="cell"><span class="num">.897</span><span class="lbl">OPS</span></div>
+            </div>
+            <div class="block-label" style="margin-top:10px">2026 SEASON · PITCHING</div>
+            <div class="stat-grid pit">
+              <div class="cell"><span class="num">2-1</span><span class="lbl">W-L</span></div>
+              <div class="cell"><span class="num">0.60</span><span class="lbl">ERA</span></div>
+              <div class="cell"><span class="num">34</span><span class="lbl">K</span></div>
+              <div class="cell"><span class="num">0.87</span><span class="lbl">WHIP</span></div>
+            </div>
+          </div>
+
+          <div class="last-game">
+            <div class="head"><span class="date">4月29日</span><span class="vs">vs MIA (打席)</span></div>
+            <div class="line"><strong>0-2</strong> · BB 3 · K 1</div>
+            <div class="head" style="margin-top:6px"><span class="date">4月28日</span><span class="vs">vs MIA (登板)</span></div>
+            <div class="line"><strong>6.0回</strong> · 5被安打 · 9K · 3BB · <strong>1自責</strong> ●</div>
+          </div>
+
+          <div class="video">
+            <video controls preload="none" playsinline poster="https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/dsulgwytsi2mueujrwsx.jpg">
+              <source src="https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/29/c7e10d39-561c1726-c0a119ed-csvm-diamondgcp-asset_1280x720_59_4000K.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption">▶ Hicks, Ruiz homer as Marlins take rubber match (4/29・試合のハイライト)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="player" data-team="dodgers">
+        <div class="avatar" data-num="18">
+          <span class="team-bar"><span class="swatch"></span>LAD</span>
+          <img src="images/yamamoto.jpg" alt="山本 由伸" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">山本 由伸<span class="num">#18</span></div>
+              <div class="team-name">LOS ANGELES DODGERS · SP</div>
+            </div>
+          </div>
+
+          <div class="empty-msg">2026年 出場記録なし</div>
+        </div>
+      </article>
+
+      <article class="player" data-team="cubs">
+        <div class="avatar" data-num="18">
+          <span class="team-bar"><span class="swatch"></span>CHC</span>
+          <img src="images/imanaga.jpg" alt="今永 昇太" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">今永 昇太<span class="num">#18</span></div>
+              <div class="team-name">CHICAGO CUBS · SP</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="block-label">2026 SEASON · PITCHING</div>
+            <div class="stat-grid pit">
+              <div class="cell"><span class="num">2-2</span><span class="lbl">W-L</span></div>
+              <div class="cell"><span class="num">3.15</span><span class="lbl">ERA</span></div>
+              <div class="cell"><span class="num">38</span><span class="lbl">K</span></div>
+              <div class="cell"><span class="num">0.87</span><span class="lbl">WHIP</span></div>
+            </div>
+          </div>
+
+          <div class="last-game">
+            <div class="head"><span class="date">4月26日</span><span class="vs">vs LAD</span></div>
+            <div class="line"><strong>5.1回</strong> · 6被安打 · 6K · 3BB · <strong>5自責</strong> ●</div>
+          </div>
+
+          <div class="video">
+            <video controls preload="none" playsinline poster="https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/lieh5yti8xlck8gan0bz.jpg">
+              <source src="https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/26/852172c4-cee2ba1a-6b288f80-csvm-diamondgcp-asset_1280x720_59_4000K.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption">▶ Ohtani, Wrobleski lead Dodgers to a 6-0 win over Cubs (4/26・試合のハイライト)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="player" data-team="cubs">
+        <div class="avatar" data-num="27">
+          <span class="team-bar"><span class="swatch"></span>CHC</span>
+          <img src="images/suzuki.jpg" alt="鈴木 誠也" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">鈴木 誠也<span class="num">#27</span></div>
+              <div class="team-name">CHICAGO CUBS · OF</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="block-label">2026 SEASON · BATTING</div>
+            <div class="stat-grid">
+              <div class="cell"><span class="num">.328</span><span class="lbl">AVG</span></div>
+              <div class="cell"><span class="num">5</span><span class="lbl">HR</span></div>
+              <div class="cell"><span class="num">9</span><span class="lbl">RBI</span></div>
+              <div class="cell"><span class="num">.997</span><span class="lbl">OPS</span></div>
+            </div>
+          </div>
+
+          <div class="last-game">
+            <div class="head"><span class="date">4月28日</span><span class="vs">vs SD</span></div>
+            <div class="line"><strong>2-4</strong> · BB 1 · K 1</div>
+          </div>
+
+          <div class="video">
+            <video controls preload="none" playsinline poster="https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/vwfrlhsoym8zwhwqixnr.jpg">
+              <source src="https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/28/a9f9f131-e9607df3-109d23dc-csvm-diamondgcp-asset_1280x720_59_4000K.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption">▶ Pete Crow-Armstrong hits home run in Cubs&#x27; 8-3 win (4/28・試合のハイライト)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="player" data-team="redsox">
+        <div class="avatar" data-num="7">
+          <span class="team-bar"><span class="swatch"></span>BOS</span>
+          <img src="images/yoshida.jpg" alt="吉田 正尚" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">吉田 正尚<span class="num">#7</span></div>
+              <div class="team-name">BOSTON RED SOX · DH/OF</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="block-label">2026 SEASON · BATTING</div>
+            <div class="stat-grid">
+              <div class="cell"><span class="num">.265</span><span class="lbl">AVG</span></div>
+              <div class="cell"><span class="num">0</span><span class="lbl">HR</span></div>
+              <div class="cell"><span class="num">5</span><span class="lbl">RBI</span></div>
+              <div class="cell"><span class="num">.717</span><span class="lbl">OPS</span></div>
+            </div>
+          </div>
+
+          <div class="last-game">
+            <div class="head"><span class="date">4月28日</span><span class="vs">vs TOR</span></div>
+            <div class="line"><strong>1-3</strong> · BB 0 · K 1</div>
+          </div>
+
+          <div class="video">
+            <video controls preload="none" playsinline poster="https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/zwjesxxkyb0yvyqzj7r1.jpg">
+              <source src="https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/28/7c0c72f5-145a60a2-1e7e6451-csvm-diamondgcp-asset_1280x720_59_4000K.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption">▶ Trey Yesavage goes 5 1/3 scoreless in season debut (4/28・試合のハイライト)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="player" data-team="bluejays">
+        <div class="avatar" data-num="7">
+          <span class="team-bar"><span class="swatch"></span>TOR</span>
+          <img src="images/okamoto.jpg" alt="岡本 和真" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">岡本 和真<span class="num">#7</span></div>
+              <div class="team-name">TORONTO BLUE JAYS · 3B</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="block-label">2026 SEASON · BATTING</div>
+            <div class="stat-grid">
+              <div class="cell"><span class="num">.218</span><span class="lbl">AVG</span></div>
+              <div class="cell"><span class="num">5</span><span class="lbl">HR</span></div>
+              <div class="cell"><span class="num">15</span><span class="lbl">RBI</span></div>
+              <div class="cell"><span class="num">.674</span><span class="lbl">OPS</span></div>
+            </div>
+          </div>
+
+          <div class="last-game">
+            <div class="head"><span class="date">4月30日</span><span class="vs">vs MIN</span></div>
+            <div class="line"><strong>0-3</strong> · BB 1 · K 0</div>
+          </div>
+
+          <div class="video">
+            <video controls preload="none" playsinline poster="https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/qsdrgb0bn540o0jud62y.jpg">
+              <source src="https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/30/93b53fbe-b18ffcf3-cea8212f-csvm-diamondgcp-asset_1280x720_59_4000K.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption">▶ Jeffers, Buxton hit home runs in Twins&#x27; 7-1 victory (4/30・試合のハイライト)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="player" data-team="whitesox">
+        <div class="avatar" data-num="5">
+          <span class="team-bar"><span class="swatch"></span>CWS</span>
+          <img src="images/murakami.jpg" alt="村上 宗隆" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">村上 宗隆<span class="num">#5</span></div>
+              <div class="team-name">CHICAGO WHITE SOX · 3B</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="block-label">2026 SEASON · BATTING</div>
+            <div class="stat-grid">
+              <div class="cell"><span class="num">.236</span><span class="lbl">AVG</span></div>
+              <div class="cell"><span class="num">12</span><span class="lbl">HR</span></div>
+              <div class="cell"><span class="num">23</span><span class="lbl">RBI</span></div>
+              <div class="cell"><span class="num">.939</span><span class="lbl">OPS</span></div>
+            </div>
+          </div>
+
+          <div class="last-game">
+            <div class="head"><span class="date">4月29日</span><span class="vs">vs LAA</span></div>
+            <div class="line"><strong>0-2</strong> · BB 3 · K 1</div>
+          </div>
+
+          <div class="video">
+            <video controls preload="none" playsinline poster="https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/ptcohhxf4gt0len0fnv2.jpg">
+              <source src="https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-04/29/4db2ddad-77ccfcce-63227384-csvm-diamondgcp-asset_1280x720_59_4000K.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption">▶ Colson Montgomery hits a walk-off single in 3-2 win (4/29・試合のハイライト)</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="player" data-team="padres">
+        <div class="avatar" data-num="1">
+          <span class="team-bar"><span class="swatch"></span>SD</span>
+          <img src="images/matsui.jpg" alt="松井 裕樹" onerror="this.remove()">
+        </div>
+        <div class="body">
+          <div class="name-row">
+            <div>
+              <div class="name">松井 裕樹<span class="num">#1</span></div>
+              <div class="team-name">SAN DIEGO PADRES · RP</div>
+            </div>
+          </div>
+
+          <div class="empty-msg">2026年 出場記録なし</div>
+        </div>
+      </article>
+
+    </div>
   </main>
   <footer>
-    Data: <a href="https://statsapi.mlb.com" target="_blank" rel="noopener">MLB Stats API</a>
+    Data: <a href="https://statsapi.mlb.com" target="_blank" rel="noopener">MLB Stats API</a> ·
+    Video: <a href="https://www.mlb.com" target="_blank" rel="noopener">MLB.com</a>
   </footer>
 </body>
 </html>
