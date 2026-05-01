@@ -697,7 +697,7 @@ CSS = """  :root {
   }
   .avatar img {
     position: absolute; inset: 0; width: 100%; height: 100%;
-    object-fit: cover; object-position: center 25%;
+    object-fit: contain; object-position: center bottom;
     z-index: 2;
   }
   .team-bar {
