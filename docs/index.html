@@ -4,519 +4,130 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MLB日本人選手 前日成績</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f7fb;
-    --bg-soft: #eef1f7;
-    --card: #ffffff;
-    --border: rgba(15, 23, 42, 0.08);
-    --border-strong: rgba(15, 23, 42, 0.16);
-    --text: #0f172a;
-    --text-dim: #5b6478;
-    --text-faint: #8b94a8;
-    --accent: #2563eb;
-    --accent-2: #7c3aed;
-    --accent-3: #ec4899;
-    --gold: #d97706;
-    --green: #059669;
-    --red: #dc2626;
-
-    --dodgers-1: #1e64c8;
-    --dodgers-2: #0a3b8a;
-    --cubs-1: #cc3433;
-    --cubs-2: #0e3386;
-    --redsox-1: #bd3039;
-    --redsox-2: #0c2340;
-    --padres-1: #2f241d;
-    --padres-2: #ffc425;
-    --neutral-1: #475569;
-    --neutral-2: #1e293b;
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --bg-card-hover: #1c2330;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --win: #3fb950;
+    --loss: #f85149;
+    --save: #d29922;
   }
-
   * { box-sizing: border-box; }
-
   body {
     margin: 0;
+    background: var(--bg);
     color: var(--text);
-    font-family: "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont,
-                 "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
-    line-height: 1.65;
-    background:
-      radial-gradient(1000px 500px at 100% -10%, rgba(124, 58, 237, 0.06), transparent 60%),
-      radial-gradient(900px 500px at 0% 110%, rgba(37, 99, 235, 0.07), transparent 60%),
-      var(--bg);
-    background-attachment: fixed;
-    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans",
+                 "Yu Gothic UI", "Meiryo", sans-serif;
+    line-height: 1.6;
   }
-
-  /* === ヘッダー === */
   header.site {
-    position: relative;
-    padding: 56px 20px 36px;
+    padding: 24px 16px 16px;
     text-align: center;
+    border-bottom: 1px solid var(--border);
   }
-  header.site::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: 70%;
-    max-width: 720px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: rgba(37, 99, 235, 0.08);
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    color: var(--accent);
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin-bottom: 18px;
-    font-weight: 600;
-  }
-  .eyebrow .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 12px rgba(5, 150, 105, 0.6);
-    animation: pulse 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-
   header.site h1 {
-    margin: 0;
-    font-family: "Bebas Neue", "Noto Sans JP", sans-serif;
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    letter-spacing: 0.04em;
-    line-height: 1.05;
-    background: linear-gradient(135deg, #0f172a 0%, #2563eb 60%, #7c3aed 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  header.site h1 .ball { display: inline-block; transform: translateY(-4px); margin-right: 6px; -webkit-text-fill-color: initial; }
-
-  header.site .subtitle {
-    margin-top: 8px;
-    color: var(--text-dim);
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
-  }
-
-  .date-block {
-    margin-top: 22px;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 14px;
-    padding: 14px 22px;
-    border-radius: 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    box-shadow: 0 6px 20px -10px rgba(15, 23, 42, 0.15);
-  }
-  .date-block .date {
-    font-family: "Bebas Neue", sans-serif;
-    font-size: 1.6rem;
-    letter-spacing: 0.06em;
-    background: linear-gradient(135deg, var(--accent), var(--accent-3));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .date-block .updated {
-    color: var(--text-faint);
-    font-size: 0.78rem;
-  }
-
-  /* === メイン === */
-  main {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 32px 20px 40px;
-    display: grid;
-    gap: 22px;
-  }
-
-  .notice {
-    position: relative;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px 26px;
-    box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.18);
-    overflow: hidden;
-    animation: fadeUp 0.6s ease both;
-  }
-  .notice::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), transparent 60%);
-    pointer-events: none;
-  }
-  .notice h2 {
-    margin: 0 0 8px;
-    font-size: 1.25rem;
-    font-weight: 800;
+    margin: 0 0 4px;
+    font-size: 1.4rem;
     letter-spacing: 0.02em;
   }
-  .notice p {
-    margin: 4px 0;
-    color: var(--text-dim);
-    font-size: 0.92rem;
+  header.site .date {
+    color: var(--accent);
+    font-weight: 600;
   }
-  .notice .tag-row {
-    margin-top: 14px;
+  header.site .updated {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px;
+    display: grid;
+    gap: 14px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: background 0.2s;
+  }
+  .card:hover { background: var(--bg-card-hover); }
+  .card-head h2 {
+    margin: 0 0 4px;
+    font-size: 1.15rem;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
   }
-  .tag {
-    font-size: 0.72rem;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--bg-soft);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    letter-spacing: 0.04em;
+  .meta { color: var(--text-dim); font-size: 0.85rem; }
+  .opp { color: var(--accent); font-size: 0.95rem; margin-top: 2px; }
+  .card-body {
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
   }
-  .tag.off {
-    color: var(--gold);
-    border-color: rgba(217, 119, 6, 0.3);
-    background: rgba(217, 119, 6, 0.08);
-    font-weight: 600;
-  }
-
-  /* セクション見出し */
-  .section-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 18px 4px 4px;
-    color: var(--text-faint);
-    font-size: 0.78rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .section-title::before, .section-title::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
-  }
-
-  /* 選手カード */
-  .player-grid {
+  .stat-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: auto 1fr auto 1fr;
+    gap: 6px 10px;
+    align-items: baseline;
+    padding: 4px 0;
   }
-  .player {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-    animation: fadeUp 0.6s ease both;
-    box-shadow: 0 6px 20px -14px rgba(15, 23, 42, 0.2);
-  }
-  .player:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-strong);
-    box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.3);
-  }
-
-  /* 画像エリア */
-  .avatar {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 11;
-    background:
-      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 50%),
-      linear-gradient(135deg, var(--team-1, #475569), var(--team-2, #1e293b));
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-  }
-  .avatar::before {
-    /* 背番号（写真がない場合のフォールバック） */
-    content: attr(data-num);
-    font-family: "Bebas Neue", sans-serif;
-    font-size: clamp(5rem, 14vw, 7rem);
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-    letter-spacing: 0.02em;
-    z-index: 1;
-  }
-  .avatar::after {
-    /* 斜めのストライプ装飾 */
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      135deg,
-      transparent 0 24px,
-      rgba(255, 255, 255, 0.04) 24px 25px
-    );
-    pointer-events: none;
-  }
-  .avatar img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 2;
-  }
-
-  /* 左肩のチーム表示バー */
-  .team-bar {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(15, 23, 42, 0.6);
-    color: #fff;
-    font-size: 0.65rem;
-    letter-spacing: 0.14em;
-    font-weight: 600;
-    backdrop-filter: blur(6px);
-  }
-  .team-bar .swatch {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--team-1);
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.5);
-  }
-
-  /* 右上のステータスバッジ */
-  .status {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 3;
-    font-size: 0.65rem;
-    padding: 5px 10px;
-    border-radius: 6px;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--text);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(0,0,0,0.05);
-  }
-  .status.recent { color: var(--accent); }
-  .status.wait   { color: var(--accent-2); }
-  .status.none   { color: var(--text-faint); }
-
-  /* 本文 */
-  .player .body {
-    padding: 16px 18px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .player .name {
-    font-weight: 800;
-    font-size: 1.1rem;
-    letter-spacing: 0.01em;
-  }
-  .player .team {
-    font-size: 0.72rem;
-    color: var(--text-faint);
-    letter-spacing: 0.1em;
-    font-weight: 600;
-  }
-  .player .info {
+  .stat-label { color: var(--text-dim); font-size: 0.85rem; }
+  .stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .season {
     margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
     color: var(--text-dim);
     font-size: 0.85rem;
-    line-height: 1.55;
   }
-  .player .info strong { color: var(--text); font-weight: 700; }
-
-  /* チーム別カラー */
-  .player[data-team="dodgers"] { --team-1: var(--dodgers-1); --team-2: var(--dodgers-2); }
-  .player[data-team="cubs"]    { --team-1: var(--cubs-1);    --team-2: var(--cubs-2); }
-  .player[data-team="redsox"]  { --team-1: var(--redsox-1);  --team-2: var(--redsox-2); }
-  .player[data-team="padres"]  { --team-1: var(--padres-2);  --team-2: var(--padres-1); }
-  .player[data-team="none"]    { --team-1: var(--neutral-1); --team-2: var(--neutral-2); }
-
-  /* アニメ遅延 */
-  .player:nth-child(1) { animation-delay: 0.05s; }
-  .player:nth-child(2) { animation-delay: 0.10s; }
-  .player:nth-child(3) { animation-delay: 0.15s; }
-  .player:nth-child(4) { animation-delay: 0.20s; }
-  .player:nth-child(5) { animation-delay: 0.25s; }
-  .player:nth-child(6) { animation-delay: 0.30s; }
-  .player:nth-child(7) { animation-delay: 0.35s; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
+  .season strong { color: var(--text); }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
   }
-
+  .badge.win { background: var(--win); color: #061a0a; }
+  .badge.loss { background: var(--loss); color: #1a0606; }
+  .badge.save { background: var(--save); color: #1a1306; }
+  .empty {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 32px 16px;
+  }
   footer {
     text-align: center;
-    color: var(--text-faint);
+    color: var(--text-dim);
     font-size: 0.75rem;
-    padding: 30px 16px 50px;
-    letter-spacing: 0.05em;
+    padding: 24px 16px 32px;
   }
-  footer a {
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px dashed rgba(37, 99, 235, 0.4);
+  footer a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 480px) {
+    .stat-row { grid-template-columns: auto 1fr auto 1fr; gap: 4px 8px; }
+    .card { padding: 14px; }
   }
-  footer a:hover { color: var(--accent-2); border-color: var(--accent-2); }
 </style>
 </head>
 <body>
   <header class="site">
-    <span class="eyebrow"><span class="dot"></span>DAILY REPORT</span>
-    <h1><span class="ball">⚾</span>JAPANESE IN MLB</h1>
-    <div class="subtitle">前日のメジャーリーグ・日本人選手 出場記録</div>
-    <div class="date-block">
-      <div class="date">APR 30, 2026</div>
-      <div class="updated">取得 / May 1, 2026</div>
-    </div>
+    <h1>⚾ MLB日本人選手 前日の成績</h1>
+    <div class="date">2026年04月30日</div>
+    <div class="updated">2026年05月01日 23:30 更新</div>
   </header>
-
   <main>
-    <section class="notice">
-      <h2>本日対象の出場選手はいません</h2>
-      <p>2026年4月30日のMLB試合に、対象の日本人選手は登板・出場しませんでした。</p>
-      <p>ドジャース・カブス・レッドソックス・パドレス・レイズが揃ってオフ日でした。</p>
-      <div class="tag-row">
-        <span class="tag off">DODGERS OFF</span>
-        <span class="tag off">CUBS OFF</span>
-        <span class="tag off">RED SOX OFF</span>
-        <span class="tag off">PADRES OFF</span>
-        <span class="tag off">RAYS OFF</span>
-      </div>
-    </section>
-
-    <div class="section-title">Roster Status</div>
-
-    <div class="player-grid">
-      <article class="player" data-team="dodgers">
-        <div class="avatar" data-num="17">
-          <span class="team-bar"><span class="swatch"></span>LAD</span>
-          <span class="status recent">最近出場</span>
-          <img src="images/ohtani.jpg" alt="大谷 翔平" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">大谷 翔平</div>
-          <div class="team">LOS ANGELES DODGERS</div>
-          <div class="info">直近の試合: <strong>2026年4月29日</strong></div>
-        </div>
-      </article>
-
-      <article class="player" data-team="dodgers">
-        <div class="avatar" data-num="18">
-          <span class="team-bar"><span class="swatch"></span>LAD</span>
-          <span class="status wait">登板予定待ち</span>
-          <img src="images/yamamoto.jpg" alt="山本 由伸" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">山本 由伸</div>
-          <div class="team">LOS ANGELES DODGERS</div>
-          <div class="info">次回のローテーション情報は未確定です。</div>
-        </div>
-      </article>
-
-      <article class="player" data-team="cubs">
-        <div class="avatar" data-num="18">
-          <span class="team-bar"><span class="swatch"></span>CHC</span>
-          <span class="status recent">最近登板</span>
-          <img src="images/imanaga.jpg" alt="今永 昇太" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">今永 昇太</div>
-          <div class="team">CHICAGO CUBS</div>
-          <div class="info">
-            直近: <strong>2026年4月26日</strong> vs ドジャース<br>
-            5.1回 6K 3BB 5自責 ●
-          </div>
-        </div>
-      </article>
-
-      <article class="player" data-team="cubs">
-        <div class="avatar" data-num="27">
-          <span class="team-bar"><span class="swatch"></span>CHC</span>
-          <span class="status recent">最近出場</span>
-          <img src="images/suzuki.jpg" alt="鈴木 誠也" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">鈴木 誠也</div>
-          <div class="team">CHICAGO CUBS</div>
-          <div class="info">直近の試合: <strong>2026年4月28日</strong> vs パドレス</div>
-        </div>
-      </article>
-
-      <article class="player" data-team="redsox">
-        <div class="avatar" data-num="7">
-          <span class="team-bar"><span class="swatch"></span>BOS</span>
-          <span class="status none">記録なし</span>
-          <img src="images/yoshida.jpg" alt="吉田 正尚" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">吉田 正尚</div>
-          <div class="team">BOSTON RED SOX</div>
-          <div class="info">今季出場記録なし。</div>
-        </div>
-      </article>
-
-      <article class="player" data-team="none">
-        <div class="avatar" data-num="—">
-          <span class="team-bar"><span class="swatch"></span>FA</span>
-          <span class="status none">記録なし</span>
-          <img src="images/uesawa.jpg" alt="上沢 直之" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">上沢 直之</div>
-          <div class="team">FREE / 所属未確定</div>
-          <div class="info">今季出場記録なし。</div>
-        </div>
-      </article>
-
-      <article class="player" data-team="padres">
-        <div class="avatar" data-num="1">
-          <span class="team-bar"><span class="swatch"></span>SD</span>
-          <span class="status none">記録なし</span>
-          <img src="images/matsui.jpg" alt="松井 裕樹" onerror="this.remove()">
-        </div>
-        <div class="body">
-          <div class="name">松井 裕樹</div>
-          <div class="team">SAN DIEGO PADRES</div>
-          <div class="info">今季登板記録なし。</div>
-        </div>
-      </article>
-    </div>
+    <p class="empty">本日対象の試合・出場選手はいません。</p>
   </main>
-
   <footer>
     Data: <a href="https://statsapi.mlb.com" target="_blank" rel="noopener">MLB Stats API</a>
   </footer>
