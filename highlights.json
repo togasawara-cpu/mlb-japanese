@@ -40,14 +40,14 @@
         "game_date": "2026-07-22"
     },
     "okamoto": {
-        "title": "Mesa Jr., Jax lead the Rays to a win over Blue Jays",
-        "blurb": "Victor Mesa Jr. drives in two runs on two hits and Griffin Jax strikes out five, leading the Rays to a 4-2 win over the Blue Jays",
+        "title": "John Schneider recaps Blue Jays' 3-1 win",
+        "blurb": "John Schneider the discusses Blue Jays' defense, generating offense and Shane Bieber's outing following a 3-1 win",
         "date": "2026-07-23",
-        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-07/22/999b940a-37983a4e-18f94549-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
-        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/dciewmwmzknzwfwjronu.jpg",
-        "gamePk": 822784,
+        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-07/23/208908f7-1695e15c-763163d9-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
+        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/k5eui5st7licrzr3tgn8.jpg",
+        "gamePk": 822785,
         "source": "mlb",
-        "game_date": "2026-07-22"
+        "game_date": "2026-07-23"
     },
     "murakami": {
         "title": "Chase Meidroth's four-hit game leads White Sox to win",
@@ -60,13 +60,13 @@
         "game_date": "2026-07-22"
     },
     "matsui": {
-        "title": "Machado, Tatis Jr., Merrill homer in Padres' win",
-        "blurb": "Manny Machado records two homers and Fernando Tatis Jr. hits the longest home run of the MLB season so far in the Padres' 8-3 win over the Braves",
-        "date": "2026-07-22",
-        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-07/21/e60d61c0-6ebada26-dce30b38-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
-        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/bnt5mze0wh5dq1yxk01c.jpg",
-        "gamePk": 824895,
+        "title": "Braves hit four homers in 6-5 win vs. Padres",
+        "blurb": "Dominic Smith, Ozzie Albies, Michael Harris II and Drake Baldwin hit home runs and Chris Sale fans 11 in the Braves' 6-5 win over the Padres",
+        "date": "2026-07-23",
+        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-07/23/455c3d38-de8cc3cb-81f79477-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
+        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/pi5ejsloy1xva12pvrbj.jpg",
+        "gamePk": 824893,
         "source": "mlb",
-        "game_date": "2026-07-21"
+        "game_date": "2026-07-23"
     }
 }
