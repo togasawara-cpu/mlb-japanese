@@ -20,11 +20,14 @@
         "game_date": "2026-09-16"
     },
     "suzuki": {
-        "source": "youtube",
-        "videoId": "Q-9Y8efB1aw",
-        "title": "【2安打1打点3出塁の活躍！鈴木誠也 全打席ダイジェスト】カブスvsレッズ MLB2026シーズン 9.19",
-        "published": "2026-09-20",
-        "game_date": "2026-09-19"
+        "title": "Pete Crow-Armstrong shows out again in win vs. Reds",
+        "blurb": "Pete Crow-Armstrong tallies three-hits while driving in two, and David Peterson K's seven in strong start as the Cubs defeat the Reds 9-1",
+        "date": "2026-09-20",
+        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-09/20/f07a4741-1d7feb79-74fa799e-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
+        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/alkdogl7ahdpvrmfisbq.jpg",
+        "gamePk": 824462,
+        "source": "mlb",
+        "game_date": "2026-09-20"
     },
     "yoshida": {
         "title": "Sonny Gray, Wilyer Abreu shine in 4-0 shutout win",
@@ -37,24 +40,24 @@
         "game_date": "2026-08-15"
     },
     "okamoto": {
-        "title": "Josh Jung, Wyatt Langford lead Rangers to 6-2 win",
-        "blurb": "Josh Jung hammers a solo home run and Wyatt Langford hits an RBI double to lead the Rangers to a 6-2 win over the Blue Jays",
+        "title": "McAdoo, Lukes lead Blue Jays to 7-2 win",
+        "blurb": "Charles McAdoo hits a two-run double and Nathan Lukes drives in two runs to lead the Blue Jays to a 7-2 win over the Rangers",
         "date": "2026-09-20",
-        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-09/19/921386dc-305b3a21-8355afaf-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
-        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/gpc4rughnhnzqtoa4gny.jpg",
-        "gamePk": 822843,
+        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-09/20/b4d57eac-bef1f97e-f965f8bf-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
+        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/xy2ey1aptmj9f3likekk.jpg",
+        "gamePk": 822844,
         "source": "mlb",
-        "game_date": "2026-09-19"
+        "game_date": "2026-09-20"
     },
     "murakami": {
-        "title": "Miguel Vargas' home run fuels White Sox 3-1 win",
-        "blurb": "Miguel Vargas launches a solo homer and steals his 20th base to keep the White Sox playoff hopes alive in their 3-1 victory over the Tigers",
-        "date": "2026-09-19",
-        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-09/19/d884c10d-249ffe6c-5379c138-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
-        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/sp5aeydylhr0pa5hox10.jpg",
-        "gamePk": 824545,
+        "title": "Davis Martin whiffs six to lead White Sox's 8-1 win",
+        "blurb": "Davis Martin whiffs six and Sam Antonacci drives in two runs to lead the White Sox's 8-1 win over the Tigers",
+        "date": "2026-09-21",
+        "mp4": "https://mlb-cuts-diamond.mlb.com/FORGE/2026/2026-09/20/8db934e8-a937c392-5c198c16-csvm-diamondgcp-asset_1280x720_59_4000K.mp4",
+        "thumb": "https://img.mlbstatic.com/mlb-images/image/upload/w_1920,h_1080,f_jpg,c_fill,g_auto/mlb/snvs4etewjbcuu8abfbt.jpg",
+        "gamePk": 824546,
         "source": "mlb",
-        "game_date": "2026-09-19"
+        "game_date": "2026-09-20"
     },
     "matsui": {
         "title": "Ethan Salas walks it off in 7-6 Padres win",
